@@ -7,6 +7,7 @@ use App\Form\ApiFormAbstract;
 use CoreDB;
 use CoreDB\Kernel\Messenger;
 use CoreDB\Kernel\SearchableInterface;
+use OpenApi\Annotations\Server;
 use Src\Form\SearchForm;
 use Src\Form\Widget\InputWidget;
 use Src\Form\Widget\SelectWidget;
@@ -24,6 +25,12 @@ class V1Controller extends ApiController
         $openapi = @\OpenApi\Generator::scan([
             __DIR__ . "/.."
         ]);
+        $openapi->servers = [
+            new Server([
+                "url" => BASE_URL,
+                "description" => "This server"
+            ])
+        ];
         header("Content-Type: application/json");
         return @$openapi->toJson();
     }
