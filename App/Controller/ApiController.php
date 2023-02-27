@@ -27,9 +27,6 @@ class ApiController extends ServiceController
 
             exit(0);
         }
-        if ($data = json_decode(file_get_contents('php://input'), true)) {
-            $_POST += $data;
-        }
         parent::__construct($arguments);
     }
 }
