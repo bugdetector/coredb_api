@@ -78,3 +78,5 @@ define("PRIVATE_VAPID_KEY", "");
 
 
 define("THEME", BaseTheme::class);
+
+define("FRONTEND_URL", "http://localhost:3000");

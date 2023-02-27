@@ -1,0 +1,14 @@
+#kt_content{
+    padding: 0;
+}
+
+#kt_content_container{
+    padding: 0;
+    margin: 0;
+    max-width: unset;
+}
+
+.swagger-ui .wrapper{
+    padding-top: 0 !important;
+    padding-left: 20px !important;
+}

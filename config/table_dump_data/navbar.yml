@@ -38,3 +38,11 @@
   available_for: logged_in
   weight: 4
   parent: 1
+6:
+  title: 'Api Documentation'
+  icon_class: 'fa fa-file'
+  link_class: null
+  url: /api/v1/documentation
+  available_for: logged_in
+  weight: 5
+  parent: null
