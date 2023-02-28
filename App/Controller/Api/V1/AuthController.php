@@ -311,7 +311,7 @@ class AuthController extends V1Controller
      * @OA\Post(
      *   tags={"Auth"},
      *   path="/api/v1/auth/resetPassword",
-     *   summary="Send forget password email for reset password.",
+     *   summary="Reset password.",
      *   @OA\Parameter(
      *      name="Bearer",
      *      in="header",
