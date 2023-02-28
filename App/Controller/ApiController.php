@@ -6,7 +6,7 @@ use CoreDB\Kernel\ServiceController;
 
 /**
  * @OA\Info(
- *     title="Energy Impact Api",
+ *     title="CoreDB Api",
  *     version="0.1"
  * )
  */
