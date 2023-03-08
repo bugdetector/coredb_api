@@ -395,7 +395,6 @@ class AuthController extends V1Controller
                 $userClass = ConfigurationManager::getInstance()->getEntityInfo("users")["class"];
                 $user = $userClass::get($_GET["USER"]);
                 $form = new ApiResetPasswordForm($user);
-                $form->processForm();
             }
         }
         if (!$form) {
