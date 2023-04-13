@@ -186,6 +186,9 @@ class CoreDB
             $userClass = ConfigurationManager::getInstance()->getEntityInfo("users")["class"];
             $userClass::deleteExpiredSessions();
             $headers = getallheaders();
+            if(!@$headers["Authorization"] && @$_SERVER["REDIRECT_HTTP_AUTHORIZATION"]) {
+                $headers["Authorization"] = @$_SERVER["REDIRECT_HTTP_AUTHORIZATION"];
+            }
             if (isset($_SESSION[BASE_URL . "-UID"])) {
                 $session = Session::get(["session_key" => session_id()]);
                 if($session){
@@ -202,7 +205,7 @@ class CoreDB
                 try{
                     $authorization = null;
                     if(isset($_COOKIE["session-token"])){
-                        $authorization = isset($_COOKIE["session-token"]);
+                        $authorization = $_COOKIE["session-token"];
                     } else if(isset($headers["Authorization"])){
                         $authorization = str_replace("Bearer ", "", $headers["Authorization"]);
                     }
@@ -213,13 +216,19 @@ class CoreDB
                         "remember_me_token" => $authorization
                     ]);
                     if($session){
-                        self::$currentUser = $userClass::get([
-                            "ID" => $session->user->getValue(),
-                            "status" => User::STATUS_ACTIVE
-                        ]);
-                        $session->session_key->setValue(session_id());
-                        $session->save();
-                        $_SESSION[BASE_URL . "-UID"] = self::$currentUser->ID;
+                        $rememberMeTimeout = defined("REMEMBER_ME_TIMEOUT") ?
+                            "+" . REMEMBER_ME_TIMEOUT : "+" . User::DEFAULT_REMEMBER_ME_TIMEOUT;
+                        if(strtotime($session->last_access->getValue()) < strtotime("-". $rememberMeTimeout)){
+                            $session->delete();
+                        } else {
+                            self::$currentUser = $userClass::get([
+                                "ID" => $session->user->getValue(),
+                                "status" => User::STATUS_ACTIVE
+                            ]);
+                            $session->session_key->setValue(session_id());
+                            $session->save();
+                            $_SESSION[BASE_URL . "-UID"] = self::$currentUser->ID;
+                        }
                     }
                 }catch(Exception $ex){}
             }
@@ -241,12 +250,14 @@ class CoreDB
         $session->map([
             "session_key" => session_id(),
             "ip_address" => User::getUserIp(),
-            "user" => $user->ID->getValue()
+            "user" => $user->ID->getValue(),
+            "last_access" => \CoreDB::currentDate(),
         ]);
         if ($rememberMe) {
             $jwt = new JWT();
             $payload = new stdClass();
             $payload->ID = $user->ID->getValue();
+            $payload->timestamp = time();
             $jwt->setPayload($payload);
             $token = $jwt->createToken();
             $session->map([
